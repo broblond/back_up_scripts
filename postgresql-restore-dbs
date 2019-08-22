@@ -1,0 +1,13 @@
+#!/bin/bash
+BACKUP_DIR="path"
+DBNAMEPGS="names_db"
+for DBNAMEPG in $DBNAMEPGS
+do
+cd $BACKUP_DIR/${DBNAMEPG}
+/bin/gunzip ${DBNAMEPG}
+chmod 777 -R $BACKUP_DIR
+su  postgres -c "psql -qAt -c 'DROP DATABASE ${DBNAMEPG};'"
+su  postgres -c "psql -qAt -c 'CREATE DATABASE ${DBNAMEPG};'"
+echo "import  ${DBNAMEPG} do index"
+su  postgres -c "pg_restore -v -e -d ${DBNAMEPG} ${DBNAMEPG}"
+done
